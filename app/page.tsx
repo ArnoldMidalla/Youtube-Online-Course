@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 import { Brain, Building, CircleDollarSign, Signal, Users } from "lucide-react";
+import Streak from "./components/streak";
 
 
 export default function Home() {
