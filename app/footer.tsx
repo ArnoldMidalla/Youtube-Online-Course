@@ -12,15 +12,17 @@ export default function Footer() {
           paths, and a vibrant community - all in one place
         </p>
         <Button className="bg-purple-700">
-          <Link className="text-xs font-bold" href={`/contact`}>Contact Us</Link>
+          <Link className="text-xs font-bold" href={`/contact`}>
+            Contact Us
+          </Link>
         </Button>
       </div>
       <div className="font-bold text-sm flex flex-col gap-2">
         <h3 className="text-purple-700">Quick Links</h3>
-        <div className="flex flex-col">
-        <Link href={`/`}>Home</Link>
-        <Link href={`/courses`}>Courses</Link>
-        <Link href={`/about`}>About Us</Link>
+        <div className="flex flex-col text-xs">
+          <Link href={`/`}>Home</Link>
+          <Link href={`/courses`}>Courses</Link>
+          <Link href={`/about`}>About Us</Link>
         </div>
       </div>
     </section>
