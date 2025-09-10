@@ -5,7 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    const { userId, videoId } = await req.json();
+    const { userId, videoId, title } = await req.json();
 
     if (!userId || !videoId) {
       return NextResponse.json({ error: "Missing userId or videoId" }, { status: 400 });
@@ -57,6 +57,7 @@ export async function POST(req: Request) {
           longest,
           last_date: today,
           last_video_id: videoId,
+          last_video_title: title || null,
           updated_at: new Date().toISOString(),
         },
         { onConflict: "user_id" }
