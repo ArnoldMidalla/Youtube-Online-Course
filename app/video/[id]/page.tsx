@@ -130,21 +130,22 @@ export default function VideoPlayerPage() {
     }
   };
 
-  const onStateChange = (event: YouTubeEvent<YouTubePlayer>) => {
-    const state = event.data;
-    const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
+  // const onStateChange = (event: YouTubeEvent<YouTubePlayer>) => {
+  //   const state = event.data;
+  //   const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
 
-    if (state === window.YT?.PlayerState?.PLAYING) {
-      startInterval();
-      saveProgress("started", Math.floor(currentTime));
-    } else if (state === window.YT?.PlayerState?.PAUSED) {
-      stopInterval();
-      saveProgress("paused", Math.floor(currentTime));
-    } else if (state === window.YT?.PlayerState?.ENDED) {
-      stopInterval();
-      saveProgress("completed", Math.floor(currentTime));
-    }
-  };
+  //   if (state === window.YT?.PlayerState?.PLAYING) {
+  //     startInterval();
+  //     saveProgress("started", Math.floor(currentTime));
+  //   } else if (state === window.YT?.PlayerState?.PAUSED) {
+  //     stopInterval();
+  //     saveProgress("paused", Math.floor(currentTime));
+  //   } else if (state === window.YT?.PlayerState?.ENDED) {
+  //     stopInterval();
+  //     saveProgress("completed", Math.floor(currentTime));
+  //   }
+  // };
+  
 
   // save on unload / navigate away
   useEffect(() => {
@@ -183,6 +184,48 @@ export default function VideoPlayerPage() {
 
   if (!videoId) return <div>No video id</div>;
   if (!user) return <div>Please log in to track watch history.</div>;
+
+  const onStateChange = (event: YouTubeEvent<YouTubePlayer>) => {
+  const state = event.data;
+  const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
+  const duration = playerRef.current?.getDuration?.() ?? 0;
+
+  if (state === window.YT?.PlayerState?.PLAYING) {
+    startInterval();
+    saveProgress("started", Math.floor(currentTime));
+  } else if (state === window.YT?.PlayerState?.PAUSED) {
+    stopInterval();
+    saveProgress("paused", Math.floor(currentTime));
+  } else if (state === window.YT?.PlayerState?.ENDED) {
+    stopInterval();
+    saveProgress("completed", Math.floor(currentTime));
+
+    // ✅ Fire streak update when video ends
+    fetch("/api/update-streak", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user?.id, videoId }),
+    })
+      .then((res) => res.json())
+      .then((data) => console.log("🔥 Streak response:", data))
+      .catch((err) => console.error("❌ Failed to update streak:", err));
+  }
+
+  // ✅ Optional: fire streak update after 50% watched
+  if (duration > 0 && currentTime > duration * 0.5) {
+    fetch("/api/update-streak", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user?.id, videoId }),
+    })
+      .then((res) => res.json())
+      .then((data) => console.log("🔥 Streak response:", data))
+      .catch((err) => console.error("❌ Failed to update streak:", err));
+
+    stopInterval(); // ensure it only fires once
+  }
+};
+
 
   return (
   <div className="p-4">
