@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import Loading from "../loading";
 
 export default function Dashboard() {
   const supabase = createClient();
@@ -84,8 +83,8 @@ export default function Dashboard() {
   const formattedDate = `${monthName}, ${year}`;
 
   return (
-    <section className=" flex flex-col items-center">
-      <section>
+    <section className=" flex justify-center">
+      <section className="flex flex-col gap-4">
         <div className="h-50 w-140 overflow-hidden rounded-lg">
           <img
             src="/Default@1080x-100.jpg"
@@ -102,20 +101,30 @@ export default function Dashboard() {
             Joined {formattedDate}
           </p>
         </div>
-        <h2 className="font-semibold">Statistics</h2>
-        <div className="grid grid-cols-2 gap-12">
-          <div className="bg-purple-50 border-2 border-purple-900 rounded-md py-2 px-4">
-            <h2 className="font-extrabold text-2xl text-purple-900">{streak?.current}</h2>
-            <p className="font-semibold text-sm text-purple-900">Day Streak</p>
-          </div>
-          <div className="bg-purple-50 border-2 border-purple-900 rounded-md py-2 px-4">
-            <h2 className="font-extrabold text-2xl text-purple-900">{streak?.longest}</h2>
-            <p className="font-semibold text-sm text-purple-900">Longest Streak</p>
-          </div>
-          {/* <div>
+        <div>
+          <h2 className="font-semibold">Statistics</h2>
+          <div className="grid grid-cols-2 gap-12">
+            <div className="bg-purple-50 border-2 border-purple-900 rounded-md py-2 px-4">
+              <h2 className="font-extrabold text-2xl text-purple-900">
+                {streak?.current}
+              </h2>
+              <p className="font-semibold text-sm text-purple-900">
+                Day Streak
+              </p>
+            </div>
+            <div className="bg-purple-50 border-2 border-purple-900 rounded-md py-2 px-4">
+              <h2 className="font-extrabold text-2xl text-purple-900">
+                {streak?.longest}
+              </h2>
+              <p className="font-semibold text-sm text-purple-900">
+                Longest Streak
+              </p>
+            </div>
+            {/* <div>
             <h1></h1>
             <p>Hours watched</p>
           </div> */}
+          </div>
         </div>
       </section>
     </section>

@@ -3,13 +3,8 @@ import Link from "next/link";
 
 import {
   Brain,
-  Building,
-  CircleDollarSign,
   Focus,
-  GraduationCap,
-  Signal,
   Trophy,
-  Users,
   Youtube,
 } from "lucide-react";
 
@@ -22,8 +17,8 @@ export default function Home() {
             <h1 className="font-black text-5xl tracking-tight leading-12">
               Learn Anything
               <br />
-              Anytime <br />
-              <span className="text-purple-700">Free on YouTube.</span>
+              Anytime{" "}
+              <span className="text-purple-700">Free<br />on YouTube.</span>
             </h1>
             <p className="max-w-120 tracking-tight leading-5">
               Stop wasting time searching for the right tutorials. We transform
@@ -121,7 +116,7 @@ export default function Home() {
             See whats trending with our learners
           </p>
         </div>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-4 cursor-default">
           <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
             <h1 className="absolute text-9xl font-bold text-gray-200  translate-x-40 blur-md hover:blur-none duration-300">1</h1>
             <Focus
@@ -129,13 +124,13 @@ export default function Home() {
               size={"40px"}
             />
             <h3 className="font-bold">Programming</h3>
-            <p className="text-xs font-medium text-gray-700">
+            <div className="text-xs font-medium text-gray-700">
               <ul>
                 <li>Python</li>
                 <li>Javascript</li>
                 <li>Web Development</li>
               </ul>
-            </p>
+            </div>
           </div>
           <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
             <h1 className="absolute text-9xl font-bold text-gray-200  translate-x-40 blur-md hover:blur-none duration-300">2</h1>
@@ -180,8 +175,8 @@ export default function Home() {
               Join over 500,000 learners and start your journey today!
             </p>
           </div>
-          <Button className="bg-white w-fit">
-            <Link className="text-purple-700" href={`/signup`}>
+          <Button className="bg-white w-fit border-2 border-white hover:bg-purple-700 text-purple-700 hover:text-white">
+            <Link className="" href={`/signup`}>
               Get Started
             </Link>
           </Button>

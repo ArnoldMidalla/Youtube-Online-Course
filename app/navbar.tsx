@@ -120,7 +120,8 @@ export default async function NavigationMenuDemo() {
           <Button>Sign Up</Button> */}
           <Avatar>
             <AvatarImage src={data.user.user_metadata.avatar_url} />
-            <AvatarFallback>{data.user.user_metadata.name}</AvatarFallback>
+            {/* <AvatarFallback>{data.user.user_metadata.name}</AvatarFallback> */}
+            <AvatarFallback className="overflow-hidden"><img src="/Default@1080x-100.jpg" alt="" className="w-full h-full object-cover" /></AvatarFallback>
           </Avatar>
         </div>
       </Link>

@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import YouTube, { YouTubeEvent, YouTubePlayer } from "react-youtube";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { channel } from "diagnostics_channel";
 
 declare namespace YT {
   enum PlayerState {
@@ -32,8 +31,15 @@ export default function VideoPlayerPage() {
   const playerRef = useRef<YouTubePlayer | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [user, setUser] = useState<any | null>(null);
-  const [videoDetails, setVideoDetails] = useState<{ title: string; description: string; channelTitle: string; viewCount: string; likeCount: string, publishedAt:string } | null>(null);
-  
+  const [videoDetails, setVideoDetails] = useState<{
+    title: string;
+    description: string;
+    channelTitle: string;
+    viewCount: string;
+    likeCount: string;
+    publishedAt: string;
+    vidDuration: string;
+  } | null>(null);
 
   // load current user (client-side)
   useEffect(() => {
@@ -58,8 +64,8 @@ export default function VideoPlayerPage() {
       if (!videoId) return;
       try {
         const res = await fetch(
-  `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
-);
+          `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
+        );
         const data = await res.json();
         if (data.items && data.items.length > 0) {
           setVideoDetails({
@@ -69,6 +75,10 @@ export default function VideoPlayerPage() {
             viewCount: data.items[0].statistics.viewCount,
             likeCount: data.items[0].statistics.likeCount,
             publishedAt: data.items[0].snippet.publishedAt,
+            // vidDuration: data.items[0].contentDetails.duration,
+            vidDuration: formatYouTubeDuration(data.items[0].contentDetails.duration),
+            
+
           });
         }
       } catch (err) {
@@ -130,23 +140,6 @@ export default function VideoPlayerPage() {
     }
   };
 
-  // const onStateChange = (event: YouTubeEvent<YouTubePlayer>) => {
-  //   const state = event.data;
-  //   const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
-
-  //   if (state === window.YT?.PlayerState?.PLAYING) {
-  //     startInterval();
-  //     saveProgress("started", Math.floor(currentTime));
-  //   } else if (state === window.YT?.PlayerState?.PAUSED) {
-  //     stopInterval();
-  //     saveProgress("paused", Math.floor(currentTime));
-  //   } else if (state === window.YT?.PlayerState?.ENDED) {
-  //     stopInterval();
-  //     saveProgress("completed", Math.floor(currentTime));
-  //   }
-  // };
-  
-
   // save on unload / navigate away
   useEffect(() => {
     const beforeUnload = () => {
@@ -166,14 +159,15 @@ export default function VideoPlayerPage() {
   // Add this function inside your component
   const updateStreakInSupabase = async () => {
     if (!user || !videoId) return;
-    const { error } = await supabase
-      .from("streaks")
-      .upsert({
+    const { error } = await supabase.from("streaks").upsert(
+      {
         user_id: user.id,
         last_video_id: videoId,
         updated_at: new Date().toISOString(),
         // add other fields as needed
-      }, { onConflict: "user_id" });
+      },
+      { onConflict: "user_id" }
+    );
 
     if (error) {
       console.error("❌ Failed to update streak in Supabase:", error);
@@ -186,74 +180,90 @@ export default function VideoPlayerPage() {
   if (!user) return <div>Please log in to track watch history.</div>;
 
   const onStateChange = (event: YouTubeEvent<YouTubePlayer>) => {
-  const state = event.data;
-  const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
-  const duration = playerRef.current?.getDuration?.() ?? 0;
+    const state = event.data;
+    const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
+    const duration = playerRef.current?.getDuration?.() ?? 0;
 
-  if (state === window.YT?.PlayerState?.PLAYING) {
-    startInterval();
-    saveProgress("started", Math.floor(currentTime));
-  } else if (state === window.YT?.PlayerState?.PAUSED) {
-    stopInterval();
-    saveProgress("paused", Math.floor(currentTime));
-  } else if (state === window.YT?.PlayerState?.ENDED) {
-    stopInterval();
-    saveProgress("completed", Math.floor(currentTime));
+    if (state === window.YT?.PlayerState?.PLAYING) {
+      startInterval();
+      saveProgress("started", Math.floor(currentTime));
+    } else if (state === window.YT?.PlayerState?.PAUSED) {
+      stopInterval();
+      saveProgress("paused", Math.floor(currentTime));
+    } else if (state === window.YT?.PlayerState?.ENDED) {
+      stopInterval();
+      saveProgress("completed", Math.floor(currentTime));
 
-    // ✅ Fire streak update when video ends
-    fetch("/api/update-streak", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user?.id, videoId }),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log("🔥 Streak response:", data))
-      .catch((err) => console.error("❌ Failed to update streak:", err));
-  }
+      // ✅ Fire streak update when video ends
+      fetch("/api/update-streak", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id, videoId }),
+      })
+        .then((res) => res.json())
+        .then((data) => console.log("🔥 Streak response:", data))
+        .catch((err) => console.error("❌ Failed to update streak:", err));
+    }
 
-  // ✅ Optional: fire streak update after 50% watched
-  if (duration > 0 && currentTime > duration * 0.5) {
-    fetch("/api/update-streak", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user?.id, videoId }),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log("🔥 Streak response:", data))
-      .catch((err) => console.error("❌ Failed to update streak:", err));
+    // ✅ Optional: fire streak update after 50% watched
+    if (duration > 0 && currentTime > duration * 0.5) {
+      fetch("/api/update-streak", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id, videoId }),
+      })
+        .then((res) => res.json())
+        .then((data) => console.log("🔥 Streak response:", data))
+        .catch((err) => console.error("❌ Failed to update streak:", err));
 
-    stopInterval(); // ensure it only fires once
-  }
-};
+      stopInterval(); // ensure it only fires once
+    }
+  };
+
+  //format incoming video duration from youtube json api
+  function formatYouTubeDuration(duration: string): string {
+  const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+  if (!match) return "0:00";
+
+  const hours = parseInt(match[1] || "0", 10) || 0;
+  const minutes = parseInt(match[2] || "0", 10) || 0;
+  const seconds = parseInt(match[3] || "0", 10) || 0;
+
+  return hours
+    ? `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`
+    : `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
 
 
   return (
-  <div className="p-4">
-    <h1 className="text-xl font-bold mb-4">
-      {videoDetails?.title ?? `Watching ${videoId}`}
-      {`channel title is ${videoDetails?.channelTitle} and views are ${videoDetails?.viewCount}, like count is ${videoDetails?.likeCount} on ${videoDetails?.publishedAt}`}
-    </h1>
+    <div className="p-4">
+      <h1 className="text-xl font-bold mb-4">
+        {videoDetails?.title ?? `Watching ${videoId}`}
+        {`channel title is ${videoDetails?.channelTitle} and views are ${videoDetails?.viewCount}, like count is ${videoDetails?.likeCount} on ${videoDetails?.publishedAt} duration is ${videoDetails?.vidDuration}`}
+      </h1>
 
-    <YouTube
-      videoId={videoId}
-      opts={{
-        width: "100%",
-        height: "480",
-        playerVars: { rel: 0 },
-      }}
-      onReady={onReady}
-      onStateChange={onStateChange}
-    />
+      <YouTube
+        videoId={videoId}
+        opts={{
+          width: "100%",
+          height: "480",
+          playerVars: { rel: 0 },
+        }}
+        onReady={onReady}
+        onStateChange={onStateChange}
+      />
 
-    {videoDetails?.description && (
-      <p className="mt-4 text-sm text-gray-700 whitespace-pre-line">
-        {videoDetails.description}
-      </p>
-    )}
+      {videoDetails?.description && (
+        <p className="mt-4 text-sm text-gray-700 whitespace-pre-line">
+          {videoDetails.description}
+        </p>
+      )}
 
-    <div className="mt-4 text-sm text-muted-foreground">
-      Progress will be saved every 10s, on pause and on video end.
+      <div className="mt-4 text-sm text-muted-foreground">
+        Progress will be saved every 10s, on pause and on video end.
+      </div>
     </div>
-  </div>
-);
+  );
 }

@@ -9,8 +9,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing ids" }, { status: 400 });
   }
 
-  const apiKey = process.env.YOUTUBE_API_KEY!;
-  const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${ids}&key=${apiKey}`;
+  const apiKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY!;
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${ids}&key=${apiKey}`;
 
   try {
     const res = await fetch(url);
