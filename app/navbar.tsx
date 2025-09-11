@@ -1,8 +1,6 @@
+import { redirect } from "next/navigation";
 
-
-import { redirect } from 'next/navigation'
-
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from "@/utils/supabase/server";
 
 import * as React from "react";
 import Link from "next/link";
@@ -21,12 +19,11 @@ import {
 import { Button } from "@/components/ui/button";
 
 export default async function NavigationMenuDemo() {
+  const supabase = await createClient();
 
-const supabase = await createClient()
-
-  const { data, error } = await supabase.auth.getUser()
+  const { data, error } = await supabase.auth.getUser();
   if (error || !data?.user) {
-    redirect('/login')
+    redirect("/login");
   }
 
   return (
@@ -112,18 +109,21 @@ const supabase = await createClient()
                 <Link href="/contact">Contact Us</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
+            
           </NavigationMenuList>
         </NavigationMenu>
       </nav>
-      <div className="flex gap-4 items-center text-sm font-bold">
-        {data.user.user_metadata.name}
+      <Link href="/profile">
+        <div className="flex gap-4 items-center text-sm font-bold">
+          {data.user.user_metadata.name}
           {/* <Button>Sign In</Button>
           <Button>Sign Up</Button> */}
-        <Avatar>
-          <AvatarImage src={data.user.user_metadata.avatar_url} />
-          <AvatarFallback>{data.user.user_metadata.name}</AvatarFallback>
-        </Avatar>
-      </div>
+          <Avatar>
+            <AvatarImage src={data.user.user_metadata.avatar_url} />
+            <AvatarFallback>{data.user.user_metadata.name}</AvatarFallback>
+          </Avatar>
+        </div>
+      </Link>
     </header>
   );
 }
