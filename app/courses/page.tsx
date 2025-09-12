@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+import he from "he";
+import SearchGif from "../components/searchgif";
+
 export default function YouTubeSearch() {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -68,34 +71,38 @@ export default function YouTubeSearch() {
           <p className="text-sm text-muted-foreground">No results found.</p>
         )}
 
-        {results.map((video) => (
-          <Link href={video.type === "playlist"
+        {results.length ? (
+          results.map((video) => (
+            <Link
+              href={
+                video.type === "playlist"
                   ? `/playlist/${video.id}`
-                  : `/video/${video.id}`}
-            key={`${video.type}-${video.id}`}
-            className="flex items-center space-x-3 p-2 border rounded-lg cursor-pointer hover:bg-muted"
-            // onClick={() => router.push(`/video/${video.id}`)}
-            // onClick={() =>
-            //   router.push(
-            //     video.type === "playlist"
-            //       ? `/playlist/${video.id}` // ✅ route for playlist
-            //       : `/video/${video.id}` // ✅ route for video
-            //   )
-            // }
-          >
-            <img
-              src={video.thumbnail}
-              alt={video.title}
-              className="w-16 h-10 rounded object-cover"
-            />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">
-                {video.type === "playlist" ? "📂 Playlist" : "▶ Video"}
-              </span>
-              <p className="text-sm font-medium line-clamp-2">{video.title}</p>
-            </div>
-          </Link>
-        ))}
+                  : `/video/${video.id}`
+              }
+              key={`${video.type}-${video.id}`}
+              className="flex items-center space-x-3 p-2 border rounded-lg cursor-pointer hover:bg-muted"
+            >
+              <img
+                src={video.thumbnail}
+                alt={video.title}
+                className="w-16 h-10 rounded object-cover"
+              />
+              <div className="flex flex-col">
+                <p className="text-sm font-medium line-clamp-2">
+                  {he.decode(video.title)}
+                </p>
+                <span className="text-xs text-muted-foreground">
+                  {video.type === "playlist" ? "Playlist" : "Video"}
+                </span>
+              </div>
+            </Link>
+          ))
+        ) : (
+          <div className="w-full flex flex-col items-center h-[50vh] justify-center">
+            <SearchGif />
+            <p className="font-semibold text-lg">Search for something</p>
+          </div>
+        )}
       </div>
     </div>
   );

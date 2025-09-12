@@ -85,7 +85,7 @@ export default function Dashboard() {
   return (
     <section className=" flex justify-center">
       <section className="flex flex-col gap-4">
-        <div className="h-50 w-140 overflow-hidden rounded-lg">
+        <div className="h-50 w-100 overflow-hidden rounded-lg">
           <img
             src="/Default@1080x-100.jpg"
             alt=""
@@ -103,23 +103,35 @@ export default function Dashboard() {
         </div>
         <div>
           <h2 className="font-semibold">Statistics</h2>
-          <div className="grid grid-cols-2 gap-12">
-            <div className="bg-purple-50 border-2 border-purple-900 rounded-md py-2 px-4">
-              <h2 className="font-extrabold text-2xl text-purple-900">
+          <div className="flex justify-between w-full">
+            <div className="border-2 border-amber-900 rounded-md w-43 h-18 overflow-hidden text-white">
+              {/* hover:shadow-lg hover:-translate-y-1 duration-300 */}
+              <h2 className="font-extrabold text-5xl absolute translate-x-5 translate-y-1">
                 {streak?.current}
               </h2>
-              <p className="font-semibold text-sm text-purple-900">
+              <p className="font-semibold text-sm absolute translate-x-3 translate-y-12.5">
                 Day Streak
               </p>
+              <img
+                src="/streakbg.png"
+                alt=""
+                className="w-full h-full object-cover "
+              />
             </div>
-            <div className="bg-purple-50 border-2 border-purple-900 rounded-md py-2 px-4">
-              <h2 className="font-extrabold text-2xl text-purple-900">
+            <div className="border-2 border-amber-900 rounded-md w-43 h-18 overflow-hidden text-white">
+              <h2 className="font-extrabold text-5xl absolute translate-x-5 translate-y-1">
                 {streak?.longest}
               </h2>
-              <p className="font-semibold text-sm text-purple-900">
+              <p className="font-semibold text-sm absolute translate-x-3 translate-y-12.5">
                 Longest Streak
               </p>
+              <img
+                src="/streakbg.png"
+                alt=""
+                className="w-full h-full object-cover"
+              />
             </div>
+
             {/* <div>
             <h1></h1>
             <p>Hours watched</p>

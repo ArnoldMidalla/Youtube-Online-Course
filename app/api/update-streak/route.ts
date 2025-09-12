@@ -8,7 +8,10 @@ export async function POST(req: Request) {
     const { userId, videoId, title } = await req.json();
 
     if (!userId || !videoId) {
-      return NextResponse.json({ error: "Missing userId or videoId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing userId or videoId" },
+        { status: 400 }
+      );
     }
 
     const today = new Date().toISOString().split("T")[0];
@@ -30,38 +33,38 @@ export async function POST(req: Request) {
 
     if (streak) {
       const lastDate = new Date(streak.last_date);
-      const diff =
-        Math.floor(
-          (new Date(today).getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
-        );
+      const diffDays = Math.floor(
+        (new Date(today).getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
 
-      if (diff === 1) {
+      if (diffDays === 1) {
+        // consecutive day → increment streak
         current = streak.current + 1;
         longest = Math.max(streak.longest, current);
-      } else if (diff === 0) {
+      } else if (diffDays === 0) {
+        // same day → keep streak
         current = streak.current;
         longest = streak.longest;
       } else {
+        // missed 1+ days → reset streak
         current = 1;
-        longest = streak.longest;
+        longest = streak.longest; // keep longest
       }
     }
 
-    // 2. Update / insert streak
-    const { error: updateError } = await supabase
-      .from("streaks")
-      .upsert(
-        {
-          user_id: userId,
-          current,
-          longest,
-          last_date: today,
-          last_video_id: videoId,
-          last_video_title: title || null,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "user_id" }
-      );
+    // 2. Upsert streak into DB
+    const { error: updateError } = await supabase.from("streaks").upsert(
+      {
+        user_id: userId,
+        current,
+        longest,
+        last_date: today,
+        last_video_id: videoId,
+        title: title || null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" }
+    );
 
     if (updateError) {
       console.error("❌ Error updating streak:", updateError);
@@ -75,4 +78,5 @@ export async function POST(req: Request) {
     console.error("❌ Unexpected error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
+  
 }

@@ -28,10 +28,10 @@ export default function Home() {
           </div>
           <div className="flex gap-4">
             <Button className="bg-purple-700">
-              <Link href={`/`}>Start Learning Free</Link>
+              <Link href={`/learn`}>Start Learning Free</Link>
             </Button>
             <Button variant="outline" className="">
-              <Link href={`/`}>Browse Courses</Link>
+              <Link href={`/courses`}>Browse Courses</Link>
             </Button>
           </div>
           <div className="bg-gray-100 flex w-fit p-4 gap-8 rounded-lg">

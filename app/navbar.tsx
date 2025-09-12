@@ -27,10 +27,10 @@ export default async function NavigationMenuDemo() {
   }
 
   return (
-    <header className="w-full h-16  top-0 flex items-center justify-between  px-12">
+    <header className="w-full h-16 sticky top-0 bg-white flex items-center justify-between px-12">
       <div className="font-bold">Skillery</div>
       <nav>
-        <NavigationMenu viewport={false}>
+        <NavigationMenu viewport={false} className="sticky top-0 bg-white">
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuLink
@@ -101,15 +101,14 @@ export default async function NavigationMenuDemo() {
                 <Link href="/about">About Us</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuLink
                 asChild
                 className={navigationMenuTriggerStyle()}
               >
                 <Link href="/contact">Contact Us</Link>
               </NavigationMenuLink>
-            </NavigationMenuItem>
-            
+            </NavigationMenuItem> */}
           </NavigationMenuList>
         </NavigationMenu>
       </nav>
@@ -121,7 +120,13 @@ export default async function NavigationMenuDemo() {
           <Avatar>
             <AvatarImage src={data.user.user_metadata.avatar_url} />
             {/* <AvatarFallback>{data.user.user_metadata.name}</AvatarFallback> */}
-            <AvatarFallback className="overflow-hidden"><img src="/Default@1080x-100.jpg" alt="" className="w-full h-full object-cover" /></AvatarFallback>
+            <AvatarFallback className="overflow-hidden">
+              <img
+                src="/Default@1080x-100.jpg"
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </AvatarFallback>
           </Avatar>
         </div>
       </Link>
