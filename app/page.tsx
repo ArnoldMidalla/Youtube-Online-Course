@@ -1,12 +1,9 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-import {
-  Brain,
-  Focus,
-  Trophy,
-  Youtube,
-} from "lucide-react";
+import { Brain, Focus, Trophy, Youtube } from "lucide-react";
+
+import SmallBoxes from "./components/smallboxes";
 
 export default function Home() {
   return (
@@ -18,7 +15,11 @@ export default function Home() {
               Learn Anything
               <br />
               Anytime{" "}
-              <span className="text-purple-700">Free<br />on YouTube.</span>
+              <span className="text-purple-700">
+                Free
+                <br />
+                on YouTube.
+              </span>
             </h1>
             <p className="max-w-120 tracking-tight leading-5">
               Stop wasting time searching for the right tutorials. We transform
@@ -65,8 +66,8 @@ export default function Home() {
             motivated and actually finish what you start
           </p>
         </div>
-        <div className="grid grid-cols-4 gap-4">
-          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
+        <div className="grid grid-cols-4 gap-4 group cursor-default">
+          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300 group-hover:blur-xs hover:!blur-none">
             <Focus
               className="text-orange-600 bg-orange-50 p-2 rounded-md scale-90"
               size={"40px"}
@@ -77,7 +78,7 @@ export default function Home() {
               courses.
             </p>
           </div>
-          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
+          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300 group-hover:blur-xs hover:!blur-none">
             <Brain
               className="text-purple-600 bg-purple-50 p-2 rounded-md scale-90"
               size={"40px"}
@@ -87,7 +88,7 @@ export default function Home() {
               Reduce manual errors and save hours every.
             </p>
           </div>
-          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
+          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300 group-hover:blur-xs hover:!blur-none">
             <Trophy
               className="text-blue-600 bg-blue-50 p-2 rounded-md scale-90"
               size={"40px"}
@@ -97,7 +98,7 @@ export default function Home() {
               Show off your skills when you complete a course.
             </p>
           </div>
-          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
+          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300 group-hover:blur-xs hover:!blur-none">
             <Youtube
               className="text-green-600 bg-green-50 p-2 rounded-md scale-90"
               size={"40px"}
@@ -116,55 +117,35 @@ export default function Home() {
             See whats trending with our learners
           </p>
         </div>
-        <div className="grid grid-cols-4 gap-4 cursor-default">
-          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
-            <h1 className="absolute text-9xl font-bold text-gray-200  translate-x-40 blur-md hover:blur-none duration-300">1</h1>
-            <Focus
-              className="text-orange-600 bg-orange-50 p-2 rounded-md scale-90"
-              size={"40px"}
-            />
-            <h3 className="font-bold">Programming</h3>
-            <div className="text-xs font-medium text-gray-700">
-              <ul>
-                <li>Python</li>
-                <li>Javascript</li>
-                <li>Web Development</li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
-            <h1 className="absolute text-9xl font-bold text-gray-200  translate-x-40 blur-md hover:blur-none duration-300">2</h1>
-            <Brain
-              className="text-purple-600 bg-purple-50 p-2 rounded-md scale-90"
-              size={"40px"}
-            />
-            <h3 className="font-bold">Design</h3>
-            {/* <p className="text-xs font-medium text-gray-700">
-              Reduce manual errors and save hours every.
-            </p> */}
-          </div>
-          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
-            <h1 className="absolute text-9xl font-bold text-gray-200  translate-x-40 blur-md hover:blur-none duration-300">3</h1>
-            <Trophy
-              className="text-blue-600 bg-blue-50 p-2 rounded-md scale-90"
-              size={"40px"}
-            />
-            <h3 className="font-bold">Business</h3>
-            {/* <p className="text-xs font-medium text-gray-700">
-              Show off your skills when you complete a course.
-            </p> */}
-          </div>
-          <div className="border-1 p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 duration-300">
-            <h1 className="absolute text-9xl font-bold text-gray-200  translate-x-40 blur-md hover:blur-none duration-300">4</h1>
-            <Youtube
-              className="text-green-600 bg-green-50 p-2 rounded-md scale-90"
-              size={"40px"}
-            />
-            <h3 className="font-bold">Lifestyle</h3>
-            <p className="text-xs font-medium text-gray-700">
-              The world's biggest library of free knowledge, made structured.
-            </p>
-          </div>
+        <div className="grid grid-cols-4 gap-4 cursor-default group">
+          <SmallBoxes
+            icon={Focus}
+            iconClassName="text-orange-600 bg-orange-50"
+            title="Programming"
+            description="Python, JavaScript, Web Development"
+            number='1'
+          />
+          <SmallBoxes
+            icon={Brain}
+            iconClassName="text-purple-600 bg-purple-50"
+            title="Design"
+            description="Learn UI/UX and creative tools."
+            number='2'
+          />
+          <SmallBoxes
+            icon={Trophy}
+            iconClassName="text-blue-600 bg-blue-50"
+            title="Business"
+            description="Sharpen your entrepreneurial skills."
+            number="3"
+          />
+          <SmallBoxes
+            icon={Youtube}
+            iconClassName="text-green-600 bg-green-50"
+            title="Lifestyle"
+            description="Curated playlists for learning anything."
+            number="4"
+          />
         </div>
       </section>
       <section className="py-12 px-30">

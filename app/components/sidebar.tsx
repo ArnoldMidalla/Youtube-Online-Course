@@ -11,13 +11,13 @@ import Link from "next/link";
 
 export default function Sidebar() {
   return (
-    <section className="h-full fixed w-40 bg-white flex justify-center py-8">
+    <section className="h-full fixed w-50 bg-white flex justify-center py-8">
       <div className="flex flex-col gap-12">
-        <nav className="">
-          <p className="text-center text-gray-700 text-sm font-semibold">
+        <nav className="flex flex-col gap-2">
+          <p className="text-center text-gray-700 text-xs font-semibold">
             Overview
           </p>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <Link href="" className="flex items-center gap-1">
               <LayoutDashboard size={22} />
               <p className="font-semibold text-sm">Dashboard</p>
@@ -41,12 +41,15 @@ export default function Sidebar() {
           </div>
         </nav>
         <div>
-          <p className="text-center text-gray-700 text-sm font-semibold">
+          <p className="text-center text-gray-700 text-xs font-semibold">
             Friends
           </p>
           <p className="font-semibold text-sm">None Yet</p>
         </div>
-        <div>
+        <div className="flex flex-col gap-3">
+          <p className="text-center text-gray-700 text-xs font-semibold">
+            Settings
+          </p>
           <Link href="" className="flex items-center gap-1">
             <Settings size={22} />
             <p className="font-semibold text-sm">Settings</p>

@@ -27,10 +27,10 @@ export default async function NavigationMenuDemo() {
   }
 
   return (
-    <header className="w-full h-16 sticky top-0 bg-white flex items-center justify-between px-12">
+    <header className="w-full h-16 sticky top-0 bg-white flex items-center justify-between px-12 z-60">
       <div className="font-bold">Skillery</div>
       <nav>
-        <NavigationMenu viewport={false} className="sticky top-0 bg-white">
+        <NavigationMenu viewport={false} className="sticky top-0 bg-white z-60">
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuLink

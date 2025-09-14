@@ -498,11 +498,11 @@ export default function VideoPlayerPage() {
   if (!user) return <div>Please log in to track watch history.</div>;
 
   return (
-    <div className="p-4">
+    <div className="p-4 ">
       <h1 className="text-xl font-bold mb-4">
         {videoDetails?.title ?? `Watching ${videoId}`}
       </h1>
-
+{/* <div className="w-full flex justify-center"> */}
       <YouTube
         videoId={videoId}
         opts={{
@@ -513,7 +513,7 @@ export default function VideoPlayerPage() {
         onReady={onReady}
         onStateChange={onStateChange}
       />
-
+{/* </div> */}
       {videoDetails?.description && (
         <p className="mt-4 text-sm text-gray-700 whitespace-pre-line">
           {videoDetails.description}
