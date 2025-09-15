@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
+import { Progress } from "@/components/ui/progress";
 
 interface VideoInfo {
   id: string;
@@ -93,6 +94,14 @@ export default function History() {
   if (history.length === 0)
     return <div>No watch history yet — play some videos!</div>;
 
+  // const [progress, setProgress] = useState(0); // start at 0
+
+  // useEffect(() => {
+  //   // animate to target after mount
+  //   const timer = setTimeout(() => setProgress(h.progress_percent), 500);
+  //   return () => clearTimeout(timer);
+  // }, []);
+
   return (
     // <ul className="space-y-4">
     //   {history.map((h) => {
@@ -138,12 +147,12 @@ export default function History() {
     //     );
     //   })}
     // </ul>
-    <section className="flex gap-4 w-160 overflow-auto">
+    <section className="flex gap-4 w-160 overflow-auto pb-4">
       {history.map((h) => {
         const info = videoInfo[h.video_id];
         return (
           <Link href={`/video/${h.video_id}`} key={h.id}>
-            <div className="w-40 h-22 rounded overflow-hidden">
+            <div className="w-40 h-22 rounded-md overflow-hidden">
               <img
                 src={
                   info?.snippet?.thumbnails?.medium?.url ||
@@ -153,18 +162,25 @@ export default function History() {
                 className="size-full object-cover"
               />
             </div>
-            <h1 className="font-semibold line-clamp-2">{info?.snippet?.title || h.video_id}</h1>
-            <p>{info?.snippet?.channelTitle || "Unknown Channel"}</p>
-            {info?.statistics?.viewCount ? (
+            <h1 className="font-semibold line-clamp-2">
+              {info?.snippet?.title || h.video_id}
+            </h1>
+            <p  className="text-sm">{info?.snippet?.channelTitle || "Unknown Channel"}</p>
+            {/* {info?.statistics?.viewCount ? (
               <div className="text-sm text-gray-500">
                 {parseInt(info.statistics.viewCount).toLocaleString()} views
               </div>
-            ) : null}
-            <p>
-              {h.progress_percent ?? 0}% ({h.progress_seconds}s /
-              {h.duration_seconds}s)
+            ) : null} */}
+            <p className="text-sm font-semibold">
+              {h.progress_percent ?? 0}%
+              {/* ({h.progress_seconds}s / {h.duration_seconds}s) */}
             </p>
-            <p>Last played: {new Date(h.updated_at).toLocaleString()}</p>
+            {/* <p>Last played: {new Date(h.updated_at).toLocaleString()}</p> */}
+            <Progress
+              // value={progress}
+              value={h.progress_percent}
+              className=" transition-all duration-1000 bg-purple-50 [&>div]:bg-purple-800"
+            />
           </Link>
         );
       })}
