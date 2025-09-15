@@ -11,7 +11,7 @@ import Link from "next/link";
 
 export default function Sidebar() {
   return (
-    <section className="h-full fixed w-50 bg-white flex justify-center py-8">
+    <section className="h-full fixed w-40 bg-white flex justify-center py-8">
       <div className="flex flex-col gap-12">
         <nav className="flex flex-col gap-2">
           <p className="text-center text-gray-700 text-xs font-semibold">

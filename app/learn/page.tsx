@@ -6,6 +6,8 @@ import Link from "next/link";
 import Loading from "../loading";
 import Statistics from "../components/statistics";
 import Sidebar from "../components/sidebar";
+import { ArrowRight } from "lucide-react";
+import History from "../components/history";
 
 interface VideoInfo {
   id: string;
@@ -98,9 +100,6 @@ export default function Learn() {
   if (history.length === 0)
     return <div>No watch history yet — play some videos!</div>;
 
-  //for '
-
-
   return (
     <>
       {/* <section className="px-30 flex flex-col gap-4 py-4">
@@ -167,12 +166,33 @@ export default function Learn() {
           })}
         </div>
       </section> */}
-      <section className="flex bg-gray-100 ">
-        <Sidebar/>
-        <main>
-          
-        </main>
-        <Statistics/>
+      <section className="flex bg-gray-100">
+        <Sidebar />
+        <div className="flex-1 pl-48 pr-8 gap-8 mt-8 flex">
+          <main className="flex-1">
+            <div className="bg-purple-800 w-full h-40 capitalize rounded-xl text-white flex flex-col justify-center pl-10">
+              <p className="font-medium text-sm">Online course</p>
+              <h1 className="text-3xl font-bold capitalize">
+                Sharpen your skills with
+                <br />
+                professional online courses
+              </h1>
+              <Link
+                href=''
+                className="flex items-center gap-1 text-sm bg-black w-fit p-2 rounded-lg font-semibold"
+              >
+                Join now{" "}
+                <ArrowRight className="size-5 text-black bg-white rounded-full p-1" />
+              </Link>
+            </div>
+
+            <div className="bg-white p-10 h-40">
+              <h1>Continue watching</h1>
+              <History />
+            </div>
+          </main>
+          <Statistics />
+        </div>
       </section>
     </>
   );

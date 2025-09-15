@@ -20,7 +20,26 @@ export default function Statistics() {
 
     fetchData();
   }, [supabase]);
-  return (<>
-  <h1>Good morning {user?.user_metadata?.name}</h1>
-  </>);
+  return (
+        <section className="w-70 flex flex-col items-center py-10 gap-4 bg-white rounded-xl">
+      <div className="size-30 overflow-hidden rounded-full">
+
+        <img
+          src={user?.user_metadata?.picture}
+          alt=""
+                    className="object-cover size-full"
+
+        />
+      </div>
+            <h1 className="text-sm font-medium flex flex-col items-center leading-1">
+
+        Good morning
+        <br />
+         <span className="font-bold text-lg break-words max-w-full">{user?.user_metadata?.name}</span>
+        <p className="text-center text-xs font-medium text-gray-500 mt-2">
+          continue learning to achieve your goal
+        </p>
+      </h1>
+    </section>
+  );
 }
