@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import he from "he";
 import SearchGif from "../components/searchgif";
+import CoursesComponents from "../components/coursesComponents";
 
 export default function YouTubeSearch() {
   const router = useRouter();
@@ -98,10 +99,21 @@ export default function YouTubeSearch() {
             </Link>
           ))
         ) : (
-          <div className="w-full flex flex-col items-center h-[50vh] justify-center">
-            <SearchGif />
-            <p className="font-semibold text-lg">Search for something</p>
-          </div>
+          // <section className="w-full flex flex-col items-center h-[50vh] justify-center">
+          //   <SearchGif />
+          //   <p className="font-semibold text-lg">Search for something</p>
+          // </section>
+          <section>
+            <p>Updates every week</p>
+            <CoursesComponents title='Technology / Programming' categoryId='28' query='coding tutorial' />
+            <CoursesComponents title='Education & Academic' categoryId='27' query="Education tutorial" />
+            <CoursesComponents title='Business & Career' categoryId='27' query='business and career tutorial' />
+            <CoursesComponents title="Science & Engineering" categoryId="" query="STEM (science) tutorial"/>
+            <CoursesComponents title="Music" categoryId="" query="Music lesson"/>
+            <CoursesComponents title="Art & Design" categoryId="" query="art tutorial"/>
+            {/* <CoursesComponents title="Lifestyle & Hobbies" categoryId="" query="Lifestyle tutorial"/> */}
+            <CoursesComponents title="DIY & Skills" categoryId="" query="how to tutorial"/>
+          </section>
         )}
       </div>
     </div>
