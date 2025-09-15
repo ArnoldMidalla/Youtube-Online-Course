@@ -168,8 +168,8 @@ export default function Learn() {
       </section> */}
       <section className="flex bg-gray-100">
         <Sidebar />
-        <div className="flex-1 pl-48 pr-8 gap-8 mt-8 flex">
-          <main className="flex-1">
+        <div className="flex-1  pl-48 pr-8 gap-8 mt-8 flex">
+          <main className="flex-1 flex flex-col gap-8">
             <div className="bg-purple-800 w-full h-40 capitalize rounded-xl text-white flex flex-col justify-center pl-10">
               <p className="font-medium text-sm">Online course</p>
               <h1 className="text-3xl font-bold capitalize">
@@ -186,8 +186,8 @@ export default function Learn() {
               </Link>
             </div>
 
-            <div className="bg-white p-10 h-40">
-              <h1>Continue watching</h1>
+            <div className="bg-white py-8 h-120 flex flex-col items-center rounded-xl gap-2">
+              <h1 className="font-bold text-xl">Continue watching</h1>
               <History />
             </div>
           </main>

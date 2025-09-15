@@ -138,19 +138,22 @@ export default function History() {
     //     );
     //   })}
     // </ul>
-    <section className="flex gap-4 w-40 overflow-auto">
+    <section className="flex gap-4 w-160 overflow-auto">
       {history.map((h) => {
         const info = videoInfo[h.video_id];
         return (
           <Link href={`/video/${h.video_id}`} key={h.id}>
-            <img
-              src={
-                info?.snippet?.thumbnails?.medium?.url ||
-                `https://i.ytimg.com/vi/${h.video_id}/hqdefault.jpg`
-              }
-              alt=""
-            />
-            <h1>{info?.snippet?.title || h.video_id}</h1>
+            <div className="w-40 h-22 rounded overflow-hidden">
+              <img
+                src={
+                  info?.snippet?.thumbnails?.medium?.url ||
+                  `https://i.ytimg.com/vi/${h.video_id}/hqdefault.jpg`
+                }
+                alt=""
+                className="size-full object-cover"
+              />
+            </div>
+            <h1 className="font-semibold line-clamp-2">{info?.snippet?.title || h.video_id}</h1>
             <p>{info?.snippet?.channelTitle || "Unknown Channel"}</p>
             {info?.statistics?.viewCount ? (
               <div className="text-sm text-gray-500">
