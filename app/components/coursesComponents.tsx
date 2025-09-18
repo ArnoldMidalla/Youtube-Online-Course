@@ -56,26 +56,23 @@ export default function YouTubeCategoryVideos({
 
     try {
       // 1) search for videos + playlists
-      const searchUrl = new URL(
-        "https://www.googleapis.com/youtube/v3/search"
-      );
+      const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
       searchUrl.searchParams.set("part", "snippet");
       // comma-separated allowed: video,playlist (default includes channel too)
       searchUrl.searchParams.set("type", "video,playlist");
       // videoCategoryId applies only to videos (playlists will be ignored)
-    //   if (categoryId) searchUrl.searchParams.set("videoCategoryId", categoryId);
+      //   if (categoryId) searchUrl.searchParams.set("videoCategoryId", categoryId);
       searchUrl.searchParams.set("q", QUERY);
       searchUrl.searchParams.set("maxResults", "6");
       searchUrl.searchParams.set("key", API_KEY);
       if (pageToken) searchUrl.searchParams.set("pageToken", pageToken);
 
-    //   const searchRes = await fetch(searchUrl.toString());
-    //   const searchData = await searchRes.json();
-    //   console.log("YouTube search response:", searchData);
-//instead of calling directly, now were using route and saving in supabase to be more efficient on api usage
-const res = await fetch(`/api/youtube-search-categories?query=${QUERY}`);
-const searchData = await res.json();
-
+      //   const searchRes = await fetch(searchUrl.toString());
+      //   const searchData = await searchRes.json();
+      //   console.log("YouTube search response:", searchData);
+      //instead of calling directly, now were using route and saving in supabase to be more efficient on api usage
+      const res = await fetch(`/api/youtube-search-categories?query=${QUERY}`);
+      const searchData = await res.json();
 
       if (searchData.error) {
         // API returned an error object
@@ -105,8 +102,13 @@ const searchData = await res.json();
       // 3) fetch details only for videos (duration, stats)
       let detailedVideos: any[] = [];
       if (videoIdArray.length) {
-        const detailsUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
-        detailsUrl.searchParams.set("part", "snippet,contentDetails,statistics");
+        const detailsUrl = new URL(
+          "https://www.googleapis.com/youtube/v3/videos"
+        );
+        detailsUrl.searchParams.set(
+          "part",
+          "snippet,contentDetails,statistics"
+        );
         detailsUrl.searchParams.set("id", videoIdArray.join(","));
         detailsUrl.searchParams.set("key", API_KEY);
 
@@ -191,7 +193,11 @@ const searchData = await res.json();
           return (
             <div key={id} className="border rounded-lg shadow p-2">
               {thumb ? (
-                <img src={thumb} alt={item.snippet?.title} className="w-full rounded-md" />
+                <img
+                  src={thumb}
+                  alt={item.snippet?.title}
+                  className="w-full rounded-md"
+                />
               ) : (
                 <div className="w-full h-28 bg-gray-100 rounded-md" />
               )}
@@ -199,7 +205,9 @@ const searchData = await res.json();
               <h2 className="mt-2 font-semibold text-sm line-clamp-2">
                 {item.snippet?.title}
               </h2>
-              <p className="text-xs text-gray-600">{item.snippet?.channelTitle}</p>
+              <p className="text-xs text-gray-600">
+                {item.snippet?.channelTitle}
+              </p>
 
               {isVideo ? (
                 <p className="text-xs mt-1">

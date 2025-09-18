@@ -1,33 +1,34 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server"; // adjust import path
+import { createClient } from "@/utils/supabase/server";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const query = searchParams.get("query") || "tutorial";
+  const query = searchParams.get("q") || "tutorial";
   const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
 
   const supabase = await createClient();
 
-  // 1) check cached videos first
+  // 1) Try cached data (last 7 days)
   const { data: cached } = await supabase
     .from("youtube_videos")
     .select("*")
-    .ilike("title", `%${query}%`)
+    .eq("query", query)
+    .gte("updated_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()) // only fresh data
     .limit(6);
 
   if (cached && cached.length > 0) {
     return NextResponse.json({ items: cached, cached: true });
   }
 
-  // 2) fetch fresh from YouTube
-  const url = new URL("https://www.googleapis.com/youtube/v3/search");
-  url.searchParams.set("part", "snippet");
-  url.searchParams.set("type", "video,playlist");
-  url.searchParams.set("q", query);
-  url.searchParams.set("maxResults", "6");
-  url.searchParams.set("key", API_KEY!);
+  // 2) Fetch fresh from YouTube
+  const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
+  searchUrl.searchParams.set("part", "snippet");
+  searchUrl.searchParams.set("type", "video,playlist");
+  searchUrl.searchParams.set("q", query);
+  searchUrl.searchParams.set("maxResults", "6");
+  searchUrl.searchParams.set("key", API_KEY!);
 
-  const ytRes = await fetch(url.toString());
+  const ytRes = await fetch(searchUrl.toString());
   const ytData = await ytRes.json();
 
   if (ytData.error) {
@@ -36,7 +37,7 @@ export async function GET(req: Request) {
 
   const searchItems: any[] = ytData.items ?? [];
 
-  // filter videos
+  // video details
   const videoIds = searchItems
     .filter((it) => it.id.kind === "youtube#video")
     .map((it) => it.id.videoId);
@@ -56,7 +57,7 @@ export async function GET(req: Request) {
   const playlists = searchItems.filter((it) => it.id.kind === "youtube#playlist");
   const combined = [...detailedVideos, ...playlists];
 
-  // 3) store results in Supabase
+  // prepare rows
   const toInsert = combined.map((item) => ({
     id: item.id.videoId || item.id.playlistId || item.id,
     kind: item.kind || item.id.kind,
@@ -69,6 +70,8 @@ export async function GET(req: Request) {
       "",
     duration: item.contentDetails?.duration || null,
     view_count: item.statistics?.viewCount || null,
+    query,
+    updated_at: new Date().toISOString(),
     raw: item,
   }));
 

@@ -1,295 +1,167 @@
-// "use client";
+"use client";
 
-// import React, { useEffect, useRef, useState } from "react";
-// import YouTube, { YouTubeEvent, YouTubePlayer } from "react-youtube";
-// import { useParams, useRouter } from "next/navigation";
-// import { createClient } from "@/utils/supabase/client";
+import React, { useEffect, useRef, useState } from "react";
+import YouTube, { YouTubeEvent, YouTubePlayer } from "react-youtube";
+import { useParams, useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import Link from "next/link";
 
-
-// export default function PlaylistPage() {
-//   const params = useParams<{ id: string }>();
-//   const videoId = params?.id;
-//   const supabase = createClient();
-//   const router = useRouter();
-
-//   const playerRef = useRef<YouTubePlayer | null>(null);
-//   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-//   const [user, setUser] = useState<any | null>(null);
-//   const [videoDetails, setVideoDetails] = useState<{
-//     title: string;
-//     description: string;
-//     channelTitle: string;
-//     viewCount: string;
-//     likeCount: string;
-//     publishedAt: string;
-//   } | null>(null);
-
-//   // load current user (client-side)
-//   useEffect(() => {
-//     let mounted = true;
-//     supabase.auth.getUser().then(({ data }) => {
-//       if (!mounted) return;
-//       if (!data.user) {
-//         setUser(null);
-//         // router.push("/login"); // optional
-//       } else {
-//         setUser(data.user);
-//       }
-//     });
-//     return () => {
-//       mounted = false;
-//     };
-//   }, [supabase]);
-
-//   // fetch video details from YouTube Data API (client-side)
-//   useEffect(() => {
-//     async function fetchDetails() {
-//       if (!videoId) return;
-//       try {
-//         const res = await fetch(
-//           `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
-//         );
-//         const data = await res.json();
-//         if (data.items && data.items.length > 0) {
-//           setVideoDetails({
-//             title: data.items[0].snippet.title,
-//             description: data.items[0].snippet.description,
-//             channelTitle: data.items[0].snippet.channelTitle,
-//             viewCount: data.items[0].statistics.viewCount,
-//             likeCount: data.items[0].statistics.likeCount,
-//             publishedAt: data.items[0].snippet.publishedAt,
-//           });
-//         }
-//       } catch (err) {
-//         console.error("❌ Failed to fetch video details:", err);
-//       }
-//     }
-//     fetchDetails();
-//   }, [videoId]);
-
-//   // save progress (upsert by user+video)
-//   const saveProgress = async (status: string, progressSeconds: number) => {
-//     if (!user || !videoId) return;
-//     const duration = playerRef.current?.getDuration?.() ?? 0;
-//     const percent =
-//       duration > 0 ? Math.round((progressSeconds / duration) * 100) : 0;
-
-//     const row = {
-//       user_id: user.id,
-//       video_id: videoId,
-//       status,
-//       progress_seconds: Math.floor(progressSeconds),
-//       duration_seconds: Math.floor(duration),
-//       progress_percent: percent,
-//       last_played_at: new Date().toISOString(),
-//       updated_at: new Date().toISOString(),
-//       title: videoDetails?.title ?? null,
-//       description: videoDetails?.description ?? null,
-//     };
-
-//     const { error } = await supabase
-//       .from("video_history")
-//       .upsert(row, { onConflict: "user_id,video_id" });
-
-//     if (error) {
-//       console.error("❌ Failed to save progress:", error);
-//     }
-//   };
-
-//   const onReady = (event: YouTubeEvent<YouTubePlayer>) => {
-//     playerRef.current = event.target;
-//   };
-
-//   const startInterval = () => {
-//     if (intervalRef.current) return;
-
-//     intervalRef.current = setInterval(() => {
-//       if (!playerRef.current) return;
-//       const current = playerRef.current.getCurrentTime();
-//       const duration = playerRef.current.getDuration();
-
-//       saveProgress("playing", Math.floor(current));
-//     }, 10000);
-//   };
-
-//   const stopInterval = () => {
-//     if (intervalRef.current) {
-//       clearInterval(intervalRef.current);
-//       intervalRef.current = null;
-//     }
-//   };
-
-//   // const onStateChange = (event: YouTubeEvent<YouTubePlayer>) => {
-//   //   const state = event.data;
-//   //   const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
-
-//   //   if (state === window.YT?.PlayerState?.PLAYING) {
-//   //     startInterval();
-//   //     saveProgress("started", Math.floor(currentTime));
-//   //   } else if (state === window.YT?.PlayerState?.PAUSED) {
-//   //     stopInterval();
-//   //     saveProgress("paused", Math.floor(currentTime));
-//   //   } else if (state === window.YT?.PlayerState?.ENDED) {
-//   //     stopInterval();
-//   //     saveProgress("completed", Math.floor(currentTime));
-//   //   }
-//   // };
-
-//   // save on unload / navigate away
-//   useEffect(() => {
-//     const beforeUnload = () => {
-//       if (playerRef.current) {
-//         const t = playerRef.current.getCurrentTime();
-//         saveProgress("paused", Math.floor(t));
-//       }
-//     };
-//     window.addEventListener("beforeunload", beforeUnload);
-//     return () => {
-//       window.removeEventListener("beforeunload", beforeUnload);
-//       stopInterval();
-//     };
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, [user, videoId, videoDetails]);
-
-//   // Add this function inside your component
-//   const updateStreakInSupabase = async () => {
-//     if (!user || !videoId) return;
-//     const { error } = await supabase.from("streaks").upsert(
-//       {
-//         user_id: user.id,
-//         last_video_id: videoId,
-//         updated_at: new Date().toISOString(),
-//         // add other fields as needed
-//       },
-//       { onConflict: "user_id" }
-//     );
-
-//     if (error) {
-//       console.error("❌ Failed to update streak in Supabase:", error);
-//     } else {
-//       console.log("✅ Streak updated in Supabase");
-//     }
-//   };
-
-//   if (!videoId) return <div>No video id</div>;
-//   if (!user) return <div>Please log in to track watch history.</div>;
-
-//   const onStateChange = (event: YouTubeEvent<YouTubePlayer>) => {
-//     const state = event.data;
-//     const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
-//     const duration = playerRef.current?.getDuration?.() ?? 0;
-
-//     if (state === window.YT?.PlayerState?.PLAYING) {
-//       startInterval();
-//       saveProgress("started", Math.floor(currentTime));
-//     } else if (state === window.YT?.PlayerState?.PAUSED) {
-//       stopInterval();
-//       saveProgress("paused", Math.floor(currentTime));
-//     } else if (state === window.YT?.PlayerState?.ENDED) {
-//       stopInterval();
-//       saveProgress("completed", Math.floor(currentTime));
-
-//       // ✅ Fire streak update when video ends
-//       fetch("/api/update-streak", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ userId: user?.id, videoId }),
-//       })
-//         .then((res) => res.json())
-//         .then((data) => console.log("🔥 Streak response:", data))
-//         .catch((err) => console.error("❌ Failed to update streak:", err));
-//     }
-
-//     // ✅ Optional: fire streak update after 50% watched
-//     if (duration > 0 && currentTime > duration * 0.5) {
-//       fetch("/api/update-streak", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ userId: user?.id, videoId }),
-//       })
-//         .then((res) => res.json())
-//         .then((data) => console.log("🔥 Streak response:", data))
-//         .catch((err) => console.error("❌ Failed to update streak:", err));
-
-//       stopInterval(); // ensure it only fires once
-//     }
-//   };
-
-//   return (
-//     <div className="p-4">
-//       <h1 className="text-xl font-bold mb-4">
-//         {videoDetails?.title ?? `Watching ${videoId}`}
-//         {`channel title is ${videoDetails?.channelTitle} and views are ${videoDetails?.viewCount}, like count is ${videoDetails?.likeCount} on ${videoDetails?.publishedAt}`}
-//       </h1>
-
-//       <YouTube
-//         videoId={videoId}
-//         opts={{
-//           width: "100%",
-//           height: "480",
-//           playerVars: { rel: 0 },
-//         }}
-//         onReady={onReady}
-//         onStateChange={onStateChange}
-//       />
-
-//       {videoDetails?.description && (
-//         <p className="mt-4 text-sm text-gray-700 whitespace-pre-line">
-//           {videoDetails.description}
-//         </p>
-//       )}
-
-//       <div className="mt-4 text-sm text-muted-foreground">
-//         Progress will be saved every 10s, on pause and on video end.
-//       </div>
-//     </div>
-//   );
-// }
-
-"use client"
-
-import Link from "next/link"
-
-import { useState } from "react";
+interface PlaylistVideos {
+  id: string;
+  snippet: {
+    title: string;
+    description: string;
+    channelTitle: string;
+    thumbnails: {
+      default?: { url: string };
+      medium?: { url: string };
+      high?: { url: string };
+    };
+    resourceId: {
+      kind: string;
+      videoId: string;
+    };
+  };
+  contentDetails: {
+    videoId: string;
+    videoPublishedAt: string;
+  };
+}
 
 export default function PlaylistPage() {
-    const [results, setResults] = useState<
-        { id: string; title: string; thumbnail: string; type: string }[]
-      >([]);
-    
-    return(
-        <section>
-            <div className="space-y-3">
-        
-        {results.map((video) => (
-          <Link href={video.type === "playlist"
-                  ? `/playlist/${video.id}`
-                  : `/video/${video.id}`}
-            key={`${video.type}-${video.id}`}
-            className="flex items-center space-x-3 p-2 border rounded-lg cursor-pointer hover:bg-muted"
-            // onClick={() => router.push(`/video/${video.id}`)}
-            // onClick={() =>
-            //   router.push(
-            //     video.type === "playlist"
-            //       ? `/playlist/${video.id}` // ✅ route for playlist
-            //       : `/video/${video.id}` // ✅ route for video
-            //   )
-            // }
-          >
-            <img
-              src={video.thumbnail}
-              alt={video.title}
-              className="w-16 h-10 rounded object-cover"
-            />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">
-                {video.type === "playlist" ? "📂 Playlist" : "▶ Video"}
-              </span>
-              <p className="text-sm font-medium line-clamp-2">{video.title}</p>
-            </div>
-          </Link>
-        ))}
-      </div>
-        </section>
-    )
+  const params = useParams<{ id: string }>();
+  const playlistId = params?.id;
+  const supabase = createClient();
+  const router = useRouter();
+
+  const [user, setUser] = useState<any | null>(null);
+  const [playlistDetails, setPlaylistDetails] = useState<{
+    title: string;
+    description: string;
+    thumbnails: string;
+    publishedAt: string;
+    channelTitle: string;
+    itemCount: string;
+    id: string;
+  } | null>(null);
+
+  const [playlistVideos, setPlaylistVideos] = useState<PlaylistVideos[]>([]);
+
+  // Load current user
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
+      setUser(data.user || null);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [supabase]);
+
+  // Fetch video details
+  useEffect(() => {
+    async function fetchDetails() {
+      if (!playlistId) return;
+      try {
+        const res = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&id=${playlistId}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
+        );
+        const data = await res.json();
+        const res2 = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=${playlistId}&maxResults=25&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
+        );
+        const data2 = await res2.json();
+
+        if (data.items) {
+          setPlaylistDetails({
+            title: data.items[0].snippet.title,
+            description: data.items[0].snippet.description,
+            thumbnails: data.items[0].snippet.thumbnails.medium.url,
+            channelTitle: data.items[0].snippet.channelTitle,
+            publishedAt: data.items[0].snippet.publishedAt,
+            itemCount: data.items[0].contentDetails.itemCount,
+            id: data.items[0].id,
+          });
+        }
+        if (data2.items) {
+          setPlaylistVideos(data2.items);
+        }
+      } catch (err) {
+        console.error("❌ Failed to fetch playlist details:", err);
+      }
+    }
+    fetchDetails();
+  }, [playlistId]);
+
+  function formatYouTubeDuration(duration: string): string {
+    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+    if (!match) return "0:00";
+    const hours = parseInt(match[1] || "0", 10) || 0;
+    const minutes = parseInt(match[2] || "0", 10) || 0;
+    const seconds = parseInt(match[3] || "0", 10) || 0;
+    return hours
+      ? `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+          .toString()
+          .padStart(2, "0")}`
+      : `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  }
+
+  if (!playlistId) return <div>No playlist id</div>;
+  if (!user) return <div>Please log in to track watch history.</div>;
+
+  return (
+    <section className="px-30 flex gap-4 border">
+      <section className="w-70 border flex flex-col items-center gap-2">
+        <div className="w-60 h-35 overflow-hidden rounded-xl">
+          <img
+            src={playlistDetails?.thumbnails}
+            alt=""
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div className="flex flex-col items-center">
+          <h1 className=" font-bold">{playlistDetails?.title}</h1>
+          <h1 className="text-xs font-semibold text-gray-600">
+            {playlistDetails?.channelTitle}
+          </h1>
+        </div>
+        <p className="text-xs text-gray-600 text-center line-clamp-3">
+          {playlistDetails?.description}
+        </p>
+        {/* <p>published at {playlistDetails?.publishedAt}</p> */}
+        <p className="text-sm">
+          <span className="font-bold">{playlistDetails?.itemCount}</span> videos
+        </p>
+      </section>
+      <section className="flex-1 border">
+        {playlistVideos.length ? (
+          playlistVideos.map((video) => (
+            <Link href={`https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`} key={video.id} className="flex justify-between">
+              <div className="w-15 h-8 rounded overflow-hidden">
+                <img
+                  src={video.snippet.thumbnails.default?.url}
+                  alt={video.snippet.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h3 className="font-semibold">{video.snippet.title}</h3>
+                {/* <a
+                href={`https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline"
+                >
+                Watch
+                </a> */}
+              </div>
+            </Link>
+          ))
+        ) : (
+          <p>No videos here</p>
+        )}
+      </section>
+    </section>
+  );
 }

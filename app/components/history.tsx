@@ -94,59 +94,7 @@ export default function History() {
   if (history.length === 0)
     return <div>No watch history yet — play some videos!</div>;
 
-  // const [progress, setProgress] = useState(0); // start at 0
-
-  // useEffect(() => {
-  //   // animate to target after mount
-  //   const timer = setTimeout(() => setProgress(h.progress_percent), 500);
-  //   return () => clearTimeout(timer);
-  // }, []);
-
   return (
-    // <ul className="space-y-4">
-    //   {history.map((h) => {
-    //     const info = videoInfo[h.video_id];
-    //     return (
-    //       <li key={h.id} className="flex gap-4 p-3 border rounded-lg shadow-sm">
-    //         <img
-    //           src={
-    //             info?.snippet?.thumbnails?.medium?.url ||
-    //             `https://i.ytimg.com/vi/${h.video_id}/hqdefault.jpg`
-    //           }
-    //           alt="thumb"
-    //           width={160}
-    //           className="rounded"
-    //         />
-    //         <div className="flex-1">
-    //           <div className="font-semibold">
-    //             {info?.snippet?.title || h.video_id}
-    //           </div>
-    //           <div className="text-sm text-gray-600">
-    //             {info?.snippet?.channelTitle || "Unknown Channel"}
-    //           </div>
-    //           {info?.statistics?.viewCount && (
-    //             <div className="text-sm text-gray-500">
-    //               {parseInt(info.statistics.viewCount).toLocaleString()} views
-    //             </div>
-    //           )}
-    //           <div className="text-sm">
-    //             Progress: {h.progress_percent ?? 0}% ({h.progress_seconds}s /{" "}
-    //             {h.duration_seconds}s)
-    //           </div>
-    //           <div className="text-sm text-gray-500">
-    //             Last played: {new Date(h.updated_at).toLocaleString()}
-    //           </div>
-    //           <Link
-    //             href={`/video/${h.video_id}`}
-    //             className="inline-block mt-2 px-3 py-1 bg-blue-600 text-white rounded"
-    //           >
-    //             Resume
-    //           </Link>
-    //         </div>
-    //       </li>
-    //     );
-    //   })}
-    // </ul>
     <section className="flex gap-4 w-160 overflow-auto pb-4">
       {history.map((h) => {
         const info = videoInfo[h.video_id];

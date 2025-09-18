@@ -18,7 +18,7 @@ export function GoogleButton() {
   return (
     <Button
       onClick={signIn}
-      className="px-4 py-2 border-1 rounded-md text-sm font-medium flex gap-2 items-center bg-white text-black"
+      className="px-4 py-2 border-1 rounded-md text-sm font-medium flex gap-2 items-center bg-white text-black hover:text-white hover:bg-black"
     >
       <img src="/GoogleIcon.svg" alt="" className="w-5" />Continue with Google
     </Button>

@@ -22,13 +22,33 @@ export default async function NavigationMenuDemo() {
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
-    redirect("/login");
-  }
+  // if (error || !data?.user) {
+  //   redirect("/login");
+  // }
 
   return (
     <header className="w-full h-16 sticky top-0 bg-white flex items-center justify-between px-12 z-60">
       <div className="font-bold">Skillery</div>
+      {data.user ? (
+        <Link href="/profile">
+          <div className="flex gap-4 items-center text-sm font-bold">
+            {data.user.user_metadata.name}
+            {/* <Button>Sign In</Button>
+          <Button>Sign Up</Button> */}
+            <Avatar>
+              <AvatarImage src={data.user.user_metadata.avatar_url} />
+              {/* <AvatarFallback>{data.user.user_metadata.name}</AvatarFallback> */}
+              <AvatarFallback className="overflow-hidden">
+                <img
+                  src="/Default@1080x-100.jpg"
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        </Link>
+      ) : null}
       <nav>
         <NavigationMenu viewport={false} className="sticky top-0 bg-white z-60">
           <NavigationMenuList>
@@ -101,6 +121,16 @@ export default async function NavigationMenuDemo() {
                 <Link href="/about">About Us</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
+            {data.user ? null : (
+              <NavigationMenuItem className="">
+                <NavigationMenuLink
+                  asChild
+                  className={"text-white bg-purple-800 px-4"}
+                >
+                  <Link href="/login">login</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )}
             {/* <NavigationMenuItem>
               <NavigationMenuLink
                 asChild
@@ -112,24 +142,6 @@ export default async function NavigationMenuDemo() {
           </NavigationMenuList>
         </NavigationMenu>
       </nav>
-      <Link href="/profile">
-        <div className="flex gap-4 items-center text-sm font-bold">
-          {data.user.user_metadata.name}
-          {/* <Button>Sign In</Button>
-          <Button>Sign Up</Button> */}
-          <Avatar>
-            <AvatarImage src={data.user.user_metadata.avatar_url} />
-            {/* <AvatarFallback>{data.user.user_metadata.name}</AvatarFallback> */}
-            <AvatarFallback className="overflow-hidden">
-              <img
-                src="/Default@1080x-100.jpg"
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      </Link>
     </header>
   );
 }
